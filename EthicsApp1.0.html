@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日本史 2025 Deep Learning Pro+ (Ultra) 98th Master</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Orbitron:wght@400;700;900&family=Cinzel:wght@700&display=swap');
+        
+        :root {
+            --bg-deep: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.85);
+            --accent-primary: #6366f1;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            --accent-cyan: #00f2ff;
+            --text-main: #f8fafc;
+        }
+
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: var(--bg-deep); color: var(--text-main); margin: 0; overflow-x: hidden; transition: background-color 0.5s ease; }
+        .font-flashy { font-family: 'Orbitron', sans-serif; }
+        .font-header { font-family: 'Cinzel', serif; }
+        .glass-panel { background: var(--panel-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); transition: background-color 0.5s ease; box-shadow: none !important; }
+        
+        .option-btn { 
+            transition: all 0.2s; 
+            background: rgba(255, 255, 255, 0.05); 
+            padding: 0.85rem 1.2rem !important; 
+            min-height: 3.5rem; 
+            line-height: 1.4; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start;
+            text-align: left;
+            font-size: 0.95rem; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 0.75rem; 
+            width: 100%; 
+            color: var(--text-main);
+        }
+        .option-btn:not(:disabled):hover { background: rgba(255, 255, 255, 0.1); transform: translateX(6px); border-color: var(--accent-primary); }
+        
+        .explanation-card { line-height: 1.6; border-left: 4px solid var(--accent-primary); }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); transition: all 0.3s; }
+        .dot-correct { background: var(--accent-emerald); }
+        .dot-wrong { background: var(--accent-rose); }
+        .dot-active { background: var(--accent-primary); transform: scale(1.3); }
+        
+        .group-header { background: rgba(255, 255, 255, 0.08); padding: 0.9rem 1.2rem; margin-bottom: 4px; cursor: pointer; font-weight: 900; font-size: 0.85rem; color: var(--text-main); display: flex; justify-content: space-between; border-radius: 12px; }
+        .era-header { background: rgba(255, 255, 255, 0.03); border-left: 3px solid var(--accent-primary); padding: 0.75rem 1rem; cursor: pointer; display: flex; justify-content: space-between; margin: 4px 4px 4px 12px; border-radius: 6px; font-size: 0.85rem; }
+        
+        .expanded { max-height: 3000px !important; opacity: 1 !important; visibility: visible !important; padding-bottom: 0.5rem; }
+        #custom-modal { display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 1.5rem; }
+        #custom-modal.active { display: flex; }
+        #registration-modal { display: none; position: fixed; inset: 0; z-index: 11000; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 1rem; }
+        #registration-modal.active { display: flex; }
+        
+        .neural-level-badge { background: linear-gradient(135deg, var(--accent-primary), #a855f7); color: white; padding: 2px 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 900; }
+        /* ランキングの横スクロール対応案1 (CSSのみで解決) */
+        .ranking-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 1rem; 
+            padding: 0.75rem; 
+            margin-top: 1rem; 
+            box-shadow: none !important;
+            overflow-x: auto; /* スマホで横スクロールを許可 */
+            scrollbar-width: thin; /* スクロールバーを控えめに */
+        }
+        .ranking-card::-webkit-scrollbar { height: 4px; }
+        .ranking-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        
+        /* 中のグリッドが420px以下に潰れないように固定 */
+        .ranking-card .grid { 
+            min-width: 420px; 
+        }
+        .goal-btn { transition: all 0.3s; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; font-family: 'Orbitron', sans-serif; box-shadow: none !important; }
+        .goal-btn.active { background: var(--accent-primary); border-color: white; color: white; }
+
+        .theme-swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s; position: relative; }
+        .theme-swatch:hover { transform: scale(1.15); }
+        .theme-swatch.active::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; text-shadow: 0 0 2px black; }
+
+        /* フッター用特別スタイル */
+        footer {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+        .credit-glow-primary { color: var(--accent-primary); text-shadow: 0 0 8px rgba(99, 102, 241, 0.6); }
+        .credit-glow-amber { color: var(--accent-amber); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6); }
+        .credit-glow-cyan { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 242, 255, 0.6); }
+        .copyright-text { letter-spacing: 0.4em; opacity: 0.3; transition: opacity 0.3s; }
+        footer:hover .copyright-text { opacity: 0.6; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 登録 -->
+    <div id="registration-modal">
+        <div class="glass-panel p-8 rounded-[2rem] max-w-sm w-full text-center space-y-6">
+            <h3 class="text-xl font-black text-white italic font-flashy">Registration</h3>
+            <p class="text-slate-400 text-sm">あなたの名前を登録してください。</p>
+            <div class="space-y-2">
+                <input id="user-name-input" type="text" class="w-full bg-black border border-indigo-500/50 rounded-xl p-3 text-center text-white outline-none font-bold" placeholder="SCHOLAR NAME">
+                <p id="id-annotation" class="text-[10px] text-cyan-400 italic font-bold">※記録は名前に紐付けされます。</p>
+            </div>
+            <button id="register-btn" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-black uppercase hover:bg-indigo-500 transition-all">Connect to Hub</button>
+        </div>
+    </div>
+
+    <!-- ステータス -->
+    <div id="custom-modal">
+        <div class="glass-panel p-8 rounded-[2rem] max-w-sm w-full text-center space-y-6">
+            <h3 id="modal-title" class="text-lg font-black text-white italic">Status</h3>
+            <p id="modal-message" class="text-slate-300 text-sm leading-relaxed"></p>
+            <button id="modal-close-btn" onclick="window.closeModal()" class="w-full bg-slate-800 text-slate-300 py-3 rounded-xl font-bold uppercase text-xs">Close</button>
+        </div>
+    </div>
+
+    <!-- メイン -->
+    <div id="app" class="max-w-4xl mx-auto w-full flex-grow px-3 py-3 md:p-8 flex flex-col">
+        <div id="home-screen" class="space-y-6 md:space-y-8 fade-in">
+            <!-- ヘッダーエリア -->
+            <div class="text-center md:text-left space-y-2">
+                <h1 class="text-4xl md:text-7xl font-header tracking-tighter text-white">HISTORIA <span id="app-version-display" class="font-flashy text-2xl md:text-5xl" style="color: var(--accent-primary)">ULTRA 98th</span></h1>
+                <div class="flex flex-wrap justify-center md:justify-start items-center gap-3">
+                    <span id="active-user-display" class="bg-white/10 text-white text-[10px] px-4 py-1 rounded-full border border-white/20 font-black italic">LOADING...</span>
+                    <span id="neural-level-display" class="neural-level-badge">LV. 00</span>
+                    <span id="current-rank-display" class="bg-white/10 text-white text-[10px] px-4 py-1 rounded-full border border-white/20 font-black italic">RANK --</span>
+                    
+                    <div class="flex items-center gap-2 ml-0 md:ml-4 pl-4 border-l border-white/10">
+                        <label class="text-[8px] font-black text-amber-400 uppercase italic flex items-center gap-1"><i class="fas fa-bullseye"></i> Target</label>
+                        <div class="flex gap-1">
+                            <button onclick="setGoal(60)" id="goal-60" class="goal-btn px-2 py-1 rounded-md text-[9px] font-bold">60%</button>
+                            <button onclick="setGoal(80)" id="goal-80" class="goal-btn px-2 py-1 rounded-md text-[9px] font-bold active">80%</button>
+                            <button onclick="setGoal(100)" id="goal-100" class="goal-btn px-2 py-1 rounded-md text-[9px] font-bold">100%</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="glass-panel rounded-[1.5rem] md:rounded-[2.5rem] p-5 md:p-8 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-[10px] font-black uppercase flex items-center gap-2" style="color: var(--accent-primary)"><i class="fas fa-chart-area"></i> Neural Performance</h2>
+                            <div class="flex gap-2">
+                                <button onclick="window.toggleWeakList()" class="text-[9px] bg-rose-500/20 text-rose-300 px-3 py-1 rounded-full border border-rose-500/30 font-black uppercase"><i class="fas fa-search"></i> Weak Points</button>
+                                <button onclick="window.syncAllFromSpreadsheet(false)" class="text-[9px] bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-black uppercase"><i class="fas fa-sync-alt"></i> Sync</button>
+                                <button id="cloud-sync-toggle-btn" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30 font-black uppercase"><i class="fas fa-palette"></i> Theme</button>
+                            </div>
+                        </div>
+                        <div style="position:relative; height:240px; width:100%; margin-top: 10px;"><canvas id="performanceChart"></canvas></div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <div class="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-white/5 text-center"><p class="text-[8px] text-slate-500 mb-0.5 uppercase font-bold">Total EXP</p><p id="total-neural-exp" class="text-sm md:text-lg font-flashy text-white">0</p></div>
+                            <div class="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-white/5 text-center"><p class="text-[8px] text-slate-500 mb-0.5 uppercase font-bold">10回平均</p><p id="recent-accuracy" class="text-sm md:text-lg font-flashy text-orange-400">--%</p></div>
+                            <div class="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-white/5 text-center"><p class="text-[8px] text-slate-500 mb-0.5 uppercase font-bold">通算正答率</p><p id="best-accuracy" class="text-sm md:text-lg font-flashy text-emerald-400">--%</p></div>
+                            <div class="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-white/5 text-center"><p class="text-[8px] text-slate-500 mb-0.5 uppercase font-bold">累計演習</p><p id="total-sessions-count" class="text-sm md:text-lg font-flashy text-white">0</p></div>
+                        </div>
+                        <div class="ranking-card space-y-2">
+                            <h3 class="text-[10px] font-black text-amber-400 uppercase italic flex items-center gap-2 mb-3"><i class="fas fa-trophy"></i> Top Scholars</h3>
+                            <div class="grid grid-cols-[24px_0.75fr_45px_30px_65px_65px_30px] gap-2 items-center text-[8px] font-black text-white/40 uppercase border-b border-white/10 pb-1.5 mb-1">
+                                <span>RK</span><span>NAME</span><span class="text-left">EXP</span><span class="text-left">LV</span><span class="text-left">10th Ave.</span><span class="text-left">ALL Ave.</span><span class="text-left">SESS</span>
+                            </div>
+                            <div id="ranking-container" class="space-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 space-y-6 flex flex-col">
+                    <label class="text-[10px] font-black uppercase italic" style="color: var(--accent-primary)">Session Library</label>
+                    <select id="level-select" class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-xs font-bold outline-none" style="color: var(--accent-primary)" onchange="window.renderEraMenu()">
+                        <option value="elementary">初級 (基礎・標準)</option>
+                        <option value="intermediate">中級 (基礎・標準・応用)</option>
+                        <option value="advanced">上級 (全レベル演習)</option>
+                        <option value="all" selected>ALL (制限なし表示)</option>
+                    </select>
+                    <div id="era-menu-container" class="space-y-1.5 overflow-y-auto pr-1 flex-grow max-h-[600px]"></div>
+                </div>
+            </div>
+            
+            <div id="sync-area" class="hidden glass-panel rounded-[1.5rem] p-6 border-white/10 space-y-6 fade-in">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black text-emerald-400 uppercase italic flex items-center gap-2"><i class="fas fa-palette"></i> Visual Focus Modes</h3>
+                        <span class="text-[8px] text-white/50 uppercase font-black">Scroll to explore</span>
+                    </div>
+                    <div id="theme-grid" class="grid grid-cols-10 gap-2 max-h-48 overflow-y-auto pr-2"></div>
+                </div>
+                <div class="space-y-2 pt-4 border-t border-white/5">
+                    <h3 class="text-xs font-black text-white/50 uppercase italic flex items-center gap-2"><i class="fas fa-link"></i> Sync Manager</h3>
+                    <input id="main-spreadsheet-url" type="text" class="w-full bg-black border border-slate-700 rounded p-2 text-[10px] text-emerald-300 outline-none" value="https://docs.google.com/spreadsheets/d/1IxlE8Kj4NJUlNo1XmLoO6z1_dFXhYVy6AacSWUMgfPY/edit">
+                    <button id="sync-all-btn-action" class="w-full bg-indigo-600 text-white text-[10px] py-3 rounded-lg font-black uppercase">Refresh & Sync Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 演習画面・リザルト画面などは変更なし -->
+        <div id="quiz-screen" class="hidden space-y-4 fade-in">
+            <div class="grid grid-cols-3 gap-2 px-1">
+                <div class="glass-panel p-2 rounded-xl text-center"><p class="text-[8px] text-slate-500 mb-0.5">Acc.</p><p id="current-accuracy" class="text-sm font-flashy" style="color: var(--accent-primary)">0%</p></div>
+                <div class="glass-panel p-2 rounded-xl text-center"><p class="text-[8px] text-slate-500 mb-0.5">Streak</p><p id="current-streak" class="text-sm font-flashy text-amber-400">0</p></div>
+                <div class="glass-panel p-2 rounded-xl text-center"><p class="text-[8px] text-slate-500 mb-0.5">Prog.</p><p class="text-xs font-flashy text-white"><span id="q-current">1</span>/<span id="q-total">10</span></p></div>
+            </div>
+            <div id="dot-bar" class="flex justify-center gap-1 py-1"></div>
+            <div class="glass-panel rounded-[1.5rem] p-6 relative overflow-hidden">
+                <div id="goal-indicator" class="absolute top-0 left-0 h-1 transition-all duration-700" style="width: 0%; background: var(--accent-primary)"></div>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center"><span id="diff-badge" class="px-3 py-1 rounded-full text-[8px] font-black bg-white/5 text-slate-300 uppercase"></span><p id="q-history-stat" class="text-[10px] font-flashy" style="color: var(--accent-primary)">0% (0/0)</p></div>
+                    <h2 id="question-text" class="text-lg md:text-2xl font-bold leading-snug text-white whitespace-pre-wrap text-left"></h2>
+                    <div id="options-container" class="grid grid-cols-1 gap-2 pt-2"></div>
+                </div>
+            </div>
+            <div id="feedback-area" class="hidden space-y-4 fade-in">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div id="result-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase w-fit text-white"></div>
+                    <div id="voice-message" class="font-flashy text-xl md:text-3xl font-black italic tracking-tight" style="color: var(--accent-primary)"></div>
+                </div>
+                <div class="bg-white/5 rounded-[1.5rem] p-6 border border-white/10 shadow-inner"><div id="explanation-content" class="explanation-card text-slate-300 text-sm md:text-base whitespace-pre-line px-4"></div></div>
+                <button id="next-btn-action" class="w-full bg-white text-slate-900 font-black py-4 rounded-2xl text-lg flex justify-center items-center gap-4 group">PROCEED <i class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i></button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden space-y-8 fade-in py-8">
+            <div class="glass-panel rounded-[2rem] p-10 text-center space-y-8 border-white/10 relative overflow-hidden">
+                <div id="final-icon" class="text-6xl mb-4">👑</div>
+                <h2 class="text-2xl md:text-5xl font-flashy tracking-tighter uppercase italic text-center">Neural Sync Complete</h2>
+                <div class="space-y-3">
+                    <p id="level-up-msg" class="text-amber-400 font-flashy text-xl md:text-3xl animate-pulse hidden">LEVEL UP! CONGRATULATIONS!</p>
+                    <p id="goal-eval-msg" class="text-[10px] font-black uppercase tracking-[0.3em] mb-2"></p>
+                    <p id="final-praise" class="font-flashy text-xs md:text-lg uppercase tracking-[0.3em]" style="color: var(--accent-primary)"></p>
+                    <p id="final-praise-jp" class="text-indigo-200 font-bold text-lg md:text-2xl mt-2 px-4 text-left"></p>
+                    <p id="final-message" class="text-slate-400 text-sm leading-relaxed max-w-lg mx-auto italic"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border-l-4" style="border-color: var(--accent-primary)"><p class="text-[8px] text-slate-500 font-black uppercase mb-1">Accuracy</p><p class="text-2xl font-flashy" style="color: var(--accent-primary)"><span id="final-score">0</span>%</p></div>
+                    <div class="bg-slate-900/90 p-4 rounded-xl border-l-4 border-amber-500"><p class="text-[8px] text-slate-500 font-black uppercase mb-1">EXP Gained</p><p id="final-exp-gained" class="text-2xl font-flashy text-amber-400">0</p></div>
+                </div>
+                <button onclick="window.showHome()" class="w-full text-white font-black py-4 rounded-2xl text-lg uppercase tracking-widest" style="background: var(--accent-primary)">Back to Hub</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- アップグレードされたフッター -->
+    <footer class="mt-auto pt-16 pb-12 text-center overflow-hidden">
+        <div class="max-w-4xl mx-auto px-6">
+            <p class="copyright-text font-flashy text-[8px] md:text-[9px] uppercase mb-6 text-white/40">
+                &copy; 2025 NEURAL HISTORY SYSTEMS | <span class="text-indigo-400/60">HIGH SPEC EDITION</span> | ALL RIGHTS RESERVED.
+            </p>
+            
+            <div class="credit-badge font-flashy text-[10px] md:text-[11px] tracking-[0.2em] uppercase font-black italic flex flex-wrap justify-center items-center gap-y-3 gap-x-4">
+                <div class="flex items-center gap-1">
+                    <span class="text-white/20 text-[8px]">CREATED BY</span> 
+                    <span class="credit-glow-primary px-2 py-0.5 border border-indigo-500/20 rounded bg-indigo-500/5">Myo-n</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="text-white/20 text-[8px]">USING</span> 
+                    <span class="credit-glow-amber">ChatGPT 5.2</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="text-white/20 text-[8px]">AND</span> 
+                    <span class="credit-glow-cyan">Gemini 3.0</span>
+                </div>
+            </div>
+
+            <!-- 装飾的なライン -->
+            <div class="mt-8 flex justify-center gap-1 opacity-20">
+                <div class="w-1 h-1 bg-white rounded-full"></div>
+                <div class="w-12 h-[1px] bg-white self-center"></div>
+                <div class="w-1 h-1 bg-white rounded-full"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクリプト部分は以前のものを継続して使用 -->
+    <script>
+        const FIXED_GAS_URL = "https://script.google.com/macros/s/AKfycbxQG4nFwXsJ8xb45t2iKr2uUg1Mm34Pl6I7DIblhybektEAmb98wb2owf5qKtgQpLU/exec"; 
+        const FIXED_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1IxlE8Kj4NJUlNo1XmLoO6z1_dFXhYVy6AacSWUMgfPY/edit";
+
+        let USER_NAME = "";
+        let masterDataTotal = [];
+        let quizData = []; let currentIdx = 0; let score = 0; let streak = 0;
+        let canAnswer = true; let chartInstance = null;
+        let sessionAnswers = [];
+        let currentSessionEra = ""; let currentSessionRangeLabel = "";
+        let userHistory = [];
+        let questionStats = {};
+        let rankingData = [];
+        let selectedGoal = 80;
+
+        const THEMES = {
+            modeA: { bg: '#0f172a', panel: 'rgba(30, 41, 59, 0.85)', accent: '#6366f1', text: '#f8fafc' },
+            modeB: { bg: '#064e3b', panel: 'rgba(6, 78, 59, 0.8)', accent: '#10b981', text: '#ecfdf5' },
+            modeC: { bg: '#450a0a', panel: 'rgba(127, 29, 29, 0.7)', accent: '#f43f5e', text: '#fff1f2' },
+            modeD: { bg: '#18181b', panel: 'rgba(39, 39, 42, 0.9)', accent: '#94a3b8', text: '#f4f4f5' },
+            modeE: { bg: '#431407', panel: 'rgba(124, 45, 18, 0.8)', accent: '#f59e0b', text: '#fff7ed' },
+            modeF: { bg: '#083344', panel: 'rgba(22, 78, 99, 0.8)', accent: '#00f2ff', text: '#ecfeff' },
+            modeG: { bg: '#2e1065', panel: 'rgba(76, 29, 149, 0.8)', accent: '#a855f7', text: '#f5f3ff' },
+            modeH: { bg: '#1e1b4b', panel: 'rgba(49, 46, 129, 0.8)', accent: '#fbbf24', text: '#fffbeb' },
+            modeI: { bg: '#000000', panel: 'rgba(17, 24, 39, 0.9)', accent: '#ec4899', text: '#fdf2f8' },
+            modeJ: { bg: '#022c22', panel: 'rgba(20, 83, 45, 0.8)', accent: '#4ade80', text: '#f0fdf4' },
+            t11: { bg: '#fdf2f8', panel: 'rgba(255, 255, 255, 0.9)', accent: '#db2777', text: '#831843' },
+            t12: { bg: '#f5f3ff', panel: 'rgba(255, 255, 255, 0.9)', accent: '#7c3aed', text: '#4c1d95' },
+            t13: { bg: '#ecfeff', panel: 'rgba(255, 255, 255, 0.9)', accent: '#0891b2', text: '#164e63' },
+            t14: { bg: '#fff7ed', panel: 'rgba(255, 255, 255, 0.9)', accent: '#ea580c', text: '#7c2d12' },
+            t15: { bg: '#f0f9ff', panel: 'rgba(255, 255, 255, 0.9)', accent: '#0284c7', text: '#0c4a6e' },
+            t16: { bg: '#020617', panel: 'rgba(15, 23, 42, 0.85)', accent: '#38bdf8', text: '#f8fafc' },
+            t17: { bg: '#111827', panel: 'rgba(31, 41, 55, 0.8)', accent: '#60a5fa', text: '#f3f4f6' },
+            t18: { bg: '#171717', panel: 'rgba(38, 38, 38, 0.85)', accent: '#a3a3a3', text: '#ffffff' },
+            t19: { bg: '#0c0a09', panel: 'rgba(28, 25, 23, 0.8)', accent: '#d6d3d1', text: '#fafaf9' },
+            t20: { bg: '#052e16', panel: 'rgba(6, 78, 59, 0.7)', accent: '#22c55e', text: '#f0fdf4' },
+            t21: { bg: '#2d1616', panel: 'rgba(69, 10, 10, 0.8)', accent: '#ef4444', text: '#fee2e2' },
+            t22: { bg: '#161d2d', panel: 'rgba(15, 23, 42, 0.8)', accent: '#3b82f6', text: '#eff6ff' },
+            t23: { bg: '#1d2d16', panel: 'rgba(20, 83, 45, 0.75)', accent: '#16a34a', text: '#f0fdf4' },
+            t24: { bg: '#2d2d16', panel: 'rgba(66, 66, 30, 0.8)', accent: '#ca8a04', text: '#fefce8' },
+            t25: { bg: '#22162d', panel: 'rgba(46, 16, 101, 0.8)', accent: '#9333ea', text: '#faf5ff' },
+            t26: { bg: '#000000', panel: 'rgba(20, 20, 20, 0.9)', accent: '#00ff41', text: '#ffffff' },
+            t27: { bg: '#0f0514', panel: 'rgba(30, 10, 40, 0.8)', accent: '#ff00ff', text: '#ffffff' },
+            t28: { bg: '#050f14', panel: 'rgba(10, 30, 40, 0.8)', accent: '#00ffff', text: '#ffffff' },
+            t29: { bg: '#140f05', panel: 'rgba(40, 30, 10, 0.8)', accent: '#ffff00', text: '#ffffff' },
+            t30: { bg: '#140505', panel: 'rgba(40, 10, 10, 0.8)', accent: '#ff0000', text: '#ffffff' },
+            t31: { bg: '#fff1f2', panel: 'rgba(255, 255, 255, 0.85)', accent: '#fb7185', text: '#881337' },
+            t32: { bg: '#f0fdf4', panel: 'rgba(255, 255, 255, 0.85)', accent: '#4ade80', text: '#064e3b' },
+            t33: { bg: '#fff7ed', panel: 'rgba(255, 255, 255, 0.85)', accent: '#f97316', text: '#7c2d12' },
+            t34: { bg: '#f8fafc', panel: 'rgba(255, 255, 255, 0.85)', accent: '#94a3b8', text: '#0f172a' },
+            t35: { bg: '#faf5ff', panel: 'rgba(255, 255, 255, 0.85)', accent: '#a855f7', text: '#3b0764' },
+            t36: { bg: '#1e293b', panel: 'rgba(51, 65, 85, 0.8)', accent: '#38bdf8', text: '#f1f5f9' },
+            t37: { bg: '#312e81', panel: 'rgba(67, 56, 202, 0.8)', accent: '#818cf8', text: '#e0e7ff' },
+            t38: { bg: '#4c1d95', panel: 'rgba(91, 33, 182, 0.8)', accent: '#c084fc', text: '#f5f3ff' },
+            t39: { bg: '#831843', panel: 'rgba(157, 23, 77, 0.8)', accent: '#f472b6', text: '#fdf2f8' },
+            t40: { bg: '#7c2d12', panel: 'rgba(154, 52, 18, 0.8)', accent: '#fb923c', text: '#fff7ed' },
+            t41: { bg: '#164e63', panel: 'rgba(21, 94, 117, 0.8)', accent: '#22d3ee', text: '#ecfeff' },
+            t42: { bg: '#065f46', panel: 'rgba(5, 150, 105, 0.8)', accent: '#34d399', text: '#ecfdf5' },
+            t43: { bg: '#3f6212', panel: 'rgba(101, 163, 13, 0.8)', accent: '#a3e635', text: '#f7fee7' },
+            t44: { bg: '#854d0e', panel: 'rgba(202, 138, 4, 0.8)', accent: '#facc15', text: '#fefce8' },
+            t45: { bg: '#92400e', panel: 'rgba(180, 83, 9, 0.8)', accent: '#fbbf24', text: '#fffbeb' },
+            t46: { bg: '#991b1b', panel: 'rgba(185, 28, 28, 0.8)', accent: '#f87171', text: '#fef2f2' },
+            t47: { bg: '#374151', panel: 'rgba(75, 85, 99, 0.8)', accent: '#9ca3af', text: '#f9fafb' },
+            t48: { bg: '#0f172a', panel: 'rgba(30, 41, 59, 0.8)', accent: '#f472b6', text: '#f8fafc' },
+            t49: { bg: '#1e1b4b', panel: 'rgba(49, 46, 129, 0.8)', accent: '#2dd4bf', text: '#f0fdfa' },
+            t50: { bg: '#111827', panel: 'rgba(31, 41, 55, 0.8)', accent: '#fcd34d', text: '#fffbeb' }
+        };
+
+        const getEl = (id) => document.getElementById(id);
+        const setOnClick = (id, fn) => { const el = getEl(id); if (el) el.onclick = fn; };
+
+        window.applyTheme = (modeId) => {
+            const t = THEMES[modeId]; if (!t) return;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-deep', t.bg);
+            root.style.setProperty('--panel-bg', t.panel);
+            root.style.setProperty('--accent-primary', t.accent);
+            root.style.setProperty('--text-main', t.text);
+            Object.keys(THEMES).forEach(m => { const swatch = getEl(`swatch-${m}`); if (swatch) swatch.classList.remove('active'); });
+            const activeSwatch = getEl(`swatch-${modeId}`); if (activeSwatch) activeSwatch.classList.add('active');
+            localStorage.setItem('historia_theme_mode', modeId);
+            if (chartInstance) renderPerformanceChart(userHistory);
+        };
+
+        window.setGoal = (pct) => {
+            selectedGoal = pct;
+            ['60','80','100'].forEach(g => { const btn = getEl(`goal-${g}`); if (btn) btn.classList.remove('active'); });
+            const activeBtn = getEl(`goal-${pct}`); if (activeBtn) activeBtn.classList.add('active');
+        };
+
+        window.closeModal = () => {
+            const modal = getEl('custom-modal');
+            if (modal) modal.classList.remove('active');
+        };
+
+        async function fetchWithRetry(url, options = {}, retries = 5, backoff = 1000) {
+            try {
+                const res = await fetch(url, options);
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+                return await res.json();
+            } catch (err) {
+                if (retries > 0) { await new Promise(r => setTimeout(r, backoff)); return fetchWithRetry(url, options, retries - 1, backoff * 2); }
+                throw err;
+            }
+        }
+        
+        function formatAccStr(val) {
+            if (val === null || val === undefined || val === "" || val === "--%") return "--%";
+            let s = String(val).replace('%', '').trim();
+            let n = parseFloat(s);
+            if (isNaN(n)) return "--%";
+            if (n <= 1.0 && n > 0 && String(val).indexOf('%') === -1) n *= 100;
+            return Math.round(n) + "%";
+        }
+
+        function initUserInfo() { USER_NAME = localStorage.getItem('historia_user_name'); if (!USER_NAME) { getEl('registration-modal').classList.add('active'); } else { updateUserDisplay(); } }
+        function updateUserDisplay() { if (getEl('active-user-display')) getEl('active-user-display').innerText = USER_NAME; }
+        
+        setOnClick('register-btn', () => { const val = getEl('user-name-input').value.trim(); if (!val) return; USER_NAME = val; localStorage.setItem('historia_user_name', USER_NAME); getEl('registration-modal').classList.remove('active'); updateUserDisplay(); window.syncAllFromSpreadsheet(true); });
+
+        async function logDetailedResultsToSpreadsheet(pct, correct, total) {
+            if (!FIXED_GAS_URL) return;
+            const sid = FIXED_SPREADSHEET_URL.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+            if (!sid) return;
+            const payload = { action: 'logAll', spreadsheetId: sid, dbName: USER_NAME, userId: USER_NAME, summaryAccuracy: pct + '%', summaryScore: `${correct}/${total}`, summaryRange: currentSessionRangeLabel, summaryEra: currentSessionEra, details: JSON.stringify(quizData.map((q, idx) => ({ era: q.era, qIdx: q.id.split('-').pop(), attemptNum: (questionStats[q.id]?.total || 1), result: sessionAnswers[idx] ? "○" : "×" }))), gainedExp: correct };
+            try { await fetchWithRetry(`${FIXED_GAS_URL}?${new URLSearchParams(payload).toString()}`); window.syncAllFromSpreadsheet(true); } catch (e) {}
+        }
+
+        function updateStatsUI() {
+            try {
+                const sorted = [...userHistory].sort((a,b) => b.timestamp - a.timestamp);
+                const latest = sorted[0];
+                if (latest) {
+                    const totalExp = latest.totalExp || 0;
+                    if (getEl('total-neural-exp')) getEl('total-neural-exp').innerText = totalExp;
+                    if (getEl('recent-accuracy')) getEl('recent-accuracy').innerText = formatAccStr(latest.avg10);
+                    if (getEl('best-accuracy')) getEl('best-accuracy').innerText = formatAccStr(latest.overallAcc);
+                    if (getEl('total-sessions-count')) getEl('total-sessions-count').innerText = userHistory.length;
+                    const lv = Math.floor(totalExp / 10);
+                    if (getEl('neural-level-display')) getEl('neural-level-display').innerText = `LV. ${String(lv).padStart(2, '0')}`;
+                }
+                
+                const myRank = rankingData.findIndex(r => r.name === USER_NAME) + 1;
+                if (getEl('current-rank-display')) {
+                    getEl('current-rank-display').innerText = myRank > 0 ? `RANK ${myRank}` : 'RANK --';
+                }
+
+                const rankCont = getEl('ranking-container');
+                if (rankCont) { 
+                    rankCont.innerHTML = rankingData.length > 0 ? rankingData.map((r, i) => {
+                        const rLv = Math.floor((r.exp || 0) / 10);
+                        const isMe = r.name === USER_NAME;
+                        return `<div class="grid grid-cols-[24px_0.75fr_45px_30px_65px_65px_30px] gap-2 items-center text-[10px] py-1.5 border-b border-white/5 last:border-0 ${isMe ? 'text-amber-300 bg-white/5 font-bold' : 'text-slate-200'}">
+                            <span class="opacity-40 font-black">${i+1}</span>
+                            <span class="truncate font-bold">${r.name}</span>
+                            <span class="text-left font-flashy text-[9px] text-indigo-400">${r.exp}</span>
+                            <span class="text-left font-flashy text-[9px] text-emerald-400">${String(rLv).padStart(2,'0')}</span>
+                            <span class="text-left font-flashy text-[9px] text-orange-400">${r.avg10}</span>
+                            <span class="text-left font-flashy text-[9px] text-cyan-400">${r.overall}</span>
+                            <span class="text-left font-flashy opacity-60 text-[9px]">${r.count || 0}</span>
+                        </div>`;
+                    }).join('') : '<div class="text-[9px] text-slate-500 text-center py-2 italic">No ranking data</div>'; 
+                }
+                renderPerformanceChart(userHistory);
+            } catch (err) { console.error("Stats Error:", err); }
+        }
+
+        function renderPerformanceChart(history) {
+            const ctx = getEl('performanceChart')?.getContext('2d');
+            if (!ctx) return; if (chartInstance) chartInstance.destroy();
+            const sortedData = [...history].sort((a, b) => a.timestamp - b.timestamp);
+            const labels = ["START", ...sortedData.map(h => h.date || "")];
+            const solved = [0]; const sessionAcc = [null]; const cumAcc = [null];
+            let cumSolved = 0;
+            sortedData.forEach(h => { 
+                cumSolved += Math.round(parseFloat(h.totalQ) || 0); 
+                solved.push(cumSolved); 
+                let sNum = parseFloat(String(h.score).replace('%',''));
+                if (sNum <= 1.0 && sNum > 0) sNum *= 100;
+                sessionAcc.push(isNaN(sNum) ? null : Math.round(sNum)); 
+                let aNum = parseFloat(String(h.avg10).replace('%',''));
+                if (aNum <= 1.0 && aNum > 0) aNum *= 100;
+                cumAcc.push(isNaN(aNum) ? null : Math.round(aNum));
+            });
+            const y1Max = Math.ceil((Math.max(...solved, 0) + 1) / 50) * 50;
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: '累計問題数', data: solved, borderColor: '#00f2ff', yAxisID: 'y1', tension: 0.4, fill: false, pointRadius: (ctx) => ctx.dataIndex === 0 ? 0 : 2, pointBackgroundColor: '#00f2ff', spanGaps: true, borderWidth: 1 },
+                        { label: '単回正解率', data: sessionAcc, borderColor: '#f59e0b', borderWidth: 1, yAxisID: 'y2', tension: 0, pointRadius: 2, pointBackgroundColor: '#f59e0b', showLine: true, spanGaps: true },
+                        { label: '直近10回平均', data: cumAcc, borderColor: accentColor, yAxisID: 'y2', tension: 0.2, pointRadius: 2, pointBackgroundColor: accentColor, borderWidth: 1, spanGaps: true }
+                    ]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    layout: { padding: { left: -5, right: 0, top: 60, bottom: 5 } }, 
+                    scales: { 
+                        x: { type: 'category', display: true, ticks: { color: '#64748b', font: { size: 9 }, autoSkip: true }, grid: { display: false }, offset: false }, 
+                        y1: { type: 'linear', position: 'left', min: 0, max: y1Max, ticks: { color: '#00f2ff', stepSize: 50 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y2: { 
+                            type: 'linear', position: 'right', min: 0, max: 100, 
+                            ticks: { color: '#f59e0b', stepSize: 20, callback: (v) => v + '' }, 
+                            grid: { display: false } 
+                        }
+                    },
+                    plugins: { legend: { display: false } } 
+                }
+            });
+        }
+
+        function parseTSVText(text, eraName) {
+            if (!text) return [];
+            return text.split(/\r?\n/).filter(l => l.trim() !== "").map((line, i) => {
+                const cols = line.split('\t').map(c => c.trim().replace(/^"|"$/g, ''));
+                if (cols[0] === "問題" || cols.length < 5) return null;
+                let qRaw = cols[0].replace(/^[（\(](基礎|標準|応用|発展)[）\)]/, "").trim().replace(/([①②③④])/g, '<br>$1');
+                let tag = cols[0].match(/^[（\(](基礎|標準|応用|発展)[）\)]/)?.[1] || "標準";
+                let rawExpl = (cols[13] || cols[14] || "詳細解説準備中。");
+                return { id: `${eraName}-${i + 1}`, era: eraName, question: qRaw, tag, options: [cols[1], cols[2], cols[3], cols[4]], answer: (parseInt(cols[10]) >= 1 && parseInt(cols[10]) <= 4) ? cols[parseInt(cols[10])] : cols[10], explanation: rawExpl.replace(/([①②③④])/g, '<br>$1') };
+            }).filter(p => p !== null);
+        }
+
+        window.renderEraMenu = () => {
+            const container = getEl('era-menu-container'); if(!container) return;
+            const storedTSV = JSON.parse(localStorage.getItem('nihonshi_tsv_ultra_main') || '{}');
+            masterDataTotal = Object.entries(storedTSV).flatMap(([era, tsv]) => parseTSVText(tsv, era));
+            container.innerHTML = '';
+            const categoryFramework = [ { group: "1. 原始・古代", units: ["原始・古墳", "飛鳥・奈良", "平安前期", "平安中期・後期"] }, { group: "2. 中世", units: ["鎌倉時代", "南北朝・室町時代", "戦国・安土桃山時代"] }, { group: "3. 近世", units: ["江戸前期（家康〜綱吉）", "江戸中期（享保〜化政）", "江戸末期（幕末）"] }, { group: "4. 近代・現代", units: ["明治（前期〜中期）", "明治（後期）〜大正", "昭和（戦前・戦中）", "昭和（戦後）〜平成"] }, { group: "5. 頻出テーマ史", units: ["法制・政治制度", "土地制度・経済史", "外交史", "史料問題", "社会・民衆史"] } ];
+            const level = getEl('level-select').value;
+            categoryFramework.forEach((groupObj) => {
+                const gHeader = document.createElement('div'); gHeader.className = 'group-header'; gHeader.innerHTML = `<span>${groupObj.group}</span><i class="fas fa-caret-down"></i>`;
+                const gContent = document.createElement('div'); gContent.className = 'group-content overflow-hidden max-h-0';
+                groupObj.units.forEach((unitName) => {
+                    let eraProblems = masterDataTotal.filter(d => d.era === unitName);
+                    if (level === 'elementary') eraProblems = eraProblems.filter(q => ['基礎', '標準'].includes(q.tag));
+                    else if (level === 'intermediate') eraProblems = eraProblems.filter(q => ['基礎', '標準', '応用'].includes(q.tag));
+                    const eHeader = document.createElement('div'); eHeader.className = 'era-header'; eHeader.innerHTML = `<span>${unitName} <small class="opacity-50">(${eraProblems.length})</small></span><i class="fas fa-chevron-right text-[10px]"></i>`;
+                    const eContent = document.createElement('div'); eContent.className = 'era-content grid grid-cols-4 gap-1.5 p-2 max-h-0 overflow-hidden';
+                    if (eraProblems.length > 0) {
+                        for(let i=0; i<eraProblems.length; i+=10) {
+                            const btn = document.createElement('button'); btn.className = "bg-white/5 p-1.5 rounded-lg text-[8px] font-black min-h-[42px]";
+                            btn.innerText = `${i+1}-${Math.min(i+10, eraProblems.length)}`;
+                            btn.onclick = () => { currentSessionEra = unitName; currentSessionRangeLabel = btn.innerText; quizData = eraProblems.slice(i, i+10); startQuiz(); };
+                            eContent.appendChild(btn);
+                        }
+                    } else { eContent.innerHTML = '<div class="col-span-4 text-[8px] opacity-30 text-center py-2">NO DATA</div>'; }
+                    eHeader.onclick = (ev) => { ev.stopPropagation(); eContent.classList.toggle('expanded'); };
+                    gContent.appendChild(eHeader); gContent.appendChild(eContent);
+                });
+                gHeader.onclick = () => gContent.classList.toggle('expanded');
+                container.appendChild(gHeader); container.appendChild(gContent);
+            });
+        };
+
+        function startQuiz() { currentIdx = 0; score = 0; streak = 0; sessionAnswers = []; getEl('home-screen').classList.add('hidden'); getEl('quiz-screen').classList.remove('hidden'); getEl('q-total').innerText = quizData.length; renderDots(); showQuestion(); }
+        function showQuestion() { 
+            canAnswer = true; const q = quizData[currentIdx]; getEl('q-current').innerText = currentIdx + 1; 
+            getEl('current-accuracy').innerText = (currentIdx === 0 ? 0 : Math.round((score/currentIdx)*100)) + '%'; 
+            getEl('current-streak').innerText = streak; getEl('diff-badge').innerText = `${q.era} | ${q.tag}`; 
+            const statKey = q.id;
+            const qs = questionStats[statKey] || { total: 0, correct: 0 }; 
+            if(getEl('q-history-stat')) getEl('q-history-stat').innerText = `${qs.total === 0 ? 0 : Math.round((qs.correct / qs.total) * 100)}% (${qs.correct}/${qs.total})`; 
+            let qText = q.question.replace(/正しい/g, '<span class="text-emerald-400 font-bold">正しい</span>').replace(/誤っている/g, '<span class="text-rose-400 font-bold">誤っている</span>');
+            getEl('question-text').innerHTML = qText; 
+            const oc = getEl('options-container'); oc.innerHTML = ''; 
+            shuffleArray([...q.options]).forEach((opt) => { 
+                const btn = document.createElement('button'); btn.className = "option-btn"; btn.innerHTML = `<span>${opt}</span>`; btn.onclick = () => handleAnswer(opt, btn); oc.appendChild(btn); 
+            }); 
+            getEl('feedback-area').classList.add('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+        
+        async function handleAnswer(selected, btn) { 
+            if (!canAnswer) return; canAnswer = false; const q = quizData[currentIdx]; const isCorrect = (selected === q.answer); sessionAnswers[currentIdx] = isCorrect; 
+            const statKey = q.id;
+            const exist = questionStats[statKey] || { total: 0, correct: 0 }; 
+            questionStats[statKey] = { total: exist.total + 1, correct: exist.correct + (isCorrect ? 1 : 0), lastDate: Date.now() }; 
+            if (isCorrect) { score++; streak++; getEl(`dot-${currentIdx}`).classList.add('dot-correct'); } 
+            else { streak = 0; getEl(`dot-${currentIdx}`).classList.add('dot-wrong'); } 
+            const btns = getEl('options-container').getElementsByTagName('button'); 
+            for (let b of btns) { b.disabled = true; if (b.innerText.trim() === q.answer.trim()) b.classList.add('border-emerald-500', 'bg-emerald-500/20'); else if (b.innerText.trim() === selected.trim() && !isCorrect) b.classList.add('border-rose-500', 'bg-rose-500/20'); } 
+            getEl('feedback-area').classList.remove('hidden'); getEl('explanation-content').innerHTML = q.explanation; getEl('result-badge').innerText = isCorrect ? 'CORRECT' : 'INCORRECT'; getEl('result-badge').className = "px-6 py-2 rounded-full text-[10px] font-black uppercase w-fit " + (isCorrect ? "bg-emerald-500" : "bg-rose-500"); 
+            const voiceList = isCorrect ? praiseWords.perfect : praiseWords.low; getEl('voice-message').innerText = voiceList[Math.floor(Math.random() * voiceList.length)]; setTimeout(() => { getEl('feedback-area').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
+        }
+
+        function renderDots() { const bar = getEl('dot-bar'); if(!bar) return; bar.innerHTML = ''; quizData.forEach((_, i) => { const d = document.createElement('div'); d.className = 'progress-dot'; d.id = `dot-${i}`; bar.appendChild(d); }); }
+        function showModal(title, message) { const modal = getEl('custom-modal'); if(modal) { getEl('modal-title').innerText = title; getEl('modal-message').innerText = message; modal.classList.add('active'); } }
+
+        function finishSession() {
+            const oldExp = parseInt(getEl('total-neural-exp').innerText) || 0;
+            const oldLv = Math.floor(oldExp / 10);
+            getEl('quiz-screen').classList.add('hidden'); getEl('result-screen').classList.remove('hidden');
+            const pct = Math.round((score / quizData.length) * 100); 
+            logDetailedResultsToSpreadsheet(pct, score, quizData.length);
+            getEl('final-score').innerText = pct; getEl('final-exp-gained').innerText = score;
+            const newExp = oldExp + score;
+            const newLv = Math.floor(newExp / 10);
+            const lvUpMsg = getEl('level-up-msg');
+            if (newLv > oldLv) { if (lvUpMsg) lvUpMsg.classList.remove('hidden'); } else { if (lvUpMsg) lvUpMsg.classList.add('hidden'); }
+            const goalMsg = getEl('goal-eval-msg');
+            if (pct >= selectedGoal) {
+                goalMsg.innerText = "MISSION ACCOMPLISHED: Target Attained";
+                goalMsg.className = "text-[10px] font-black uppercase tracking-[0.3em] mb-2 text-emerald-400";
+            } else {
+                goalMsg.innerText = "TARGET MISSED: " + selectedGoal + "% required";
+                goalMsg.className = "text-[10px] font-black uppercase tracking-[0.3em] mb-2 text-rose-400";
+            }
+            const resKey = pct === 100 ? 'perfect' : pct >= 80 ? 'high' : pct >= 60 ? 'mid' : 'low';
+            getEl('final-praise').innerText = praiseWords[resKey][Math.floor(Math.random() * praiseWords[resKey].length)];
+            getEl('final-praise-jp').innerText = feedbackJP[resKey][Math.floor(Math.random() * feedbackJP[resKey].length)];
+            getEl('final-icon').innerText = pct === 100 ? "👑" : pct >= 80 ? "🎯" : pct >= 60 ? "🔋" : "⚠️";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.showHome = () => { getEl('quiz-screen').classList.add('hidden'); getEl('result-screen').classList.add('hidden'); getEl('home-screen').classList.remove('hidden'); updateStatsUI(); window.renderEraMenu(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        
+        window.syncAllFromSpreadsheet = async (isAuto = false) => { 
+            if (!FIXED_GAS_URL) return; const sid = FIXED_SPREADSHEET_URL.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]; if (!sid) return;
+            try { 
+                const result = await fetchWithRetry(`${FIXED_GAS_URL}?action=sync&id=${sid}&userId=${USER_NAME}`); 
+                if (result.problems) localStorage.setItem('nihonshi_tsv_ultra_main', JSON.stringify(result.problems)); 
+                if(result.userStats) { Object.entries(result.userStats).forEach(([key, s]) => { questionStats[key] = { total: parseInt(s.total) || 0, correct: parseInt(s.correct) || 0 }; }); }
+                if(result.history) userHistory = result.history; if(result.ranking) rankingData = result.ranking; 
+                updateStatsUI(); window.renderEraMenu(); 
+            } catch (e) { if (!isAuto) showModal("Sync Error", "データの取得に失敗しました。URLをご確認ください。"); } 
+        };
+        
+        function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
+
+        const praiseWords = {
+            perfect: ["ABSOLUTELY FLAWLESS!", "PURE GENIUS AT WORK!", "BEYOND EXCELLENT!", "TOTAL MASTERY ACHIEVED!", "HISTORICAL SUPREMACY!", "THE ULTIMATE SCHOLAR!", "PERFECT NEURAL SYNC!", "UNSTOPPABLE FORCE!", "LEGENDARY PERFORMANCE!", "MASTER OF HISTORY!", "INFINITE ACCURACY!", "ROYAL ACHIEVEMENT!", "BEYOND PERFECTION!", "DIVINE KNOWLEDGE!", "GODLIKE CONCENTRATION!", "HISTORIA MAXIMA!", "ELITE LEVEL REACHED!", "TOTAL DOMINATION!", "FLAWLESS EXECUTION!", "TRUE HISTORY MASTER!"],
+            high: ["AMAZING PRECISION!", "OUTSTANDING WORK!", "ELITE PERFORMANCE!", "BRIGHT FUTURE AHEAD!", "STUNNING RESULTS!", "HIGH-SPEED SYNC!", "EXCEPTIONAL KNOWLEDGE!", "TOP-TIER ANALYSIS!", "BRILLIANT EFFORT!", "ALMOST PERFECT!", "SUPERIOR STRATEGY!", "GREAT MOMENTUM!", "SOLID EXAM-READY!", "REMARKABLE PROGRESS!", "SHARP INTELLECT!", "KEEP THIS ENERGY!", "PROFESSIONAL LEVEL!", "EXCELLENT BALANCE!", "POWERFUL INSIGHT!", "NEAR-MASTERY!"],
+            mid: ["STEADY PROGRESS!", "KEEP PUSHING FORWARD!", "STAY FOCUSED!", "SOLID FOUNDATION!", "GROWING STRONGER!", "NEURAL LINK ACTIVE!", "GOOD MOMENTUM!", "ANALYZE AND CONQUER!", "ALMOST THERE!", "STAY SHARP!", "CONSISTENT EFFORT!", "STAY VIGILANT!", "BATTLE CONTINUES!", "GAIN MORE DATA!", "EVOLVING SCHOLAR!", "KNOWLEDGE LOADING...", "KEEP THE FIRE!", "REACH FOR TOP!", "UNFOLD THE TRUTH!", "PROCESS ONGOING!"],
+            low: ["NEVER GIVE UP!", "FOCUS REQUIRED!", "STAY THE COURSE!", "RE-SYNC IMMINENT!", "ANALYZE ERRORS!", "STAY DETERMINED!", "KEEP SEARCHING!", "BUILD THE BASE!", "TRY ONCE MORE!", "KNOWLEDGE HUNTER!", "DEFIANT LEARNING!", "KEEP GRINDING!", "FUTURE IS OPEN!", "STAY HUMBLE!", "RISE ABOVE!", "STRENGTH IN PRACTICE!", "SHATTER THE LIMIT!", "REBOOT YOUR MIND!", "EMBRACE THE CHALLENGE!", "STAY BRAVE!"]
+        };
+
+        const feedbackJP = {
+            perfect: ["素晴らしい！努力が完璧な形になりました。自信を持って突き進んでください。", "全問正解！あなたの集中力と知識の深さは、合格への確かな武器になります。", "非の打ち所がない成果です。今のペースを崩さず、着実にゴールへ近づきましょう。", "完璧な同期です！この感覚を忘れないよう、日々の演習を大切にしてください。", "至高の正答率です。学んできた時間は、決してあなたを裏切りません。", "見事な満点！基礎が完璧に固まっています。応用問題もこの調子で攻略しましょう。", "圧倒的な実力ですね。今のあなたに死角はありません。本番を想定した演習を。", "努力の天才です。満点を取るのは簡単なことではありません。自分を誇りに思って。", "この100％は積み上げてきた時間の結晶です。自信を胸に、次へ進みましょう。", "素晴らしい！一問一問を大切に解く姿勢がこの結果を生みました。合格は近いです。", "お見事！知識の点と点が繋がり、面となって定着しています。その調子！", "完璧な正解率。暗記だけでなく、歴史の流れをしっかり掴めている証拠です。", "文句なしのトップ成績！この精度を維持できれば、志望校への道は明るいですよ。", "最高のパフォーマンス！疲れを感じたときは、この結果を見て自信を取り戻して。", "あなたは着実に進化しています。満点は、あなたの正しい学習法の証明です。", "素晴らしい集中力！試験会場でもこのゾーンに入れるよう、練習を重ねましょう。", "パーフェクト！歴史の証人として、全ての出来事を完璧に把握できています。", "感動的な正答率！あなたの熱意がデータに反映されています。ずっと応援しています。", "揺るぎない知識。まさにマスターの領域です。自信をさらに深めていきましょう！", "完璧です！今日得たこの「正解の感覚」を大切に、明日の学習に繋げてください。"],
+            high: ["非常に優秀なデータです。間違えた一問は、本番で得点するための「宝物」です。", "合格圏内の実力を維持できています。細かな穴を埋めることでさらに盤石に。", "素晴らしい正答率！あと一歩で完璧です。間違えた部分を丁寧にさらっておこう。", "安定感がありますね。本番でもこの冷静さを保てれば、必ず良い結果が。 ", "着実に力がついています。出来事を「なぜ」という視点で見直すとさらに伸びます。", "高スコアです！努力は確実に形になっています。油断せず、この調子で進もう。", "素晴らしい成果です。間違えた問題の解説を読み込み、自分のものにしましょう。", "優秀です！基礎知識がしっかり根付いています。次は満点を目指して挑戦を。", "このスコアは自信にして良いですよ。残りの微調整が、大きな得点差になります。", "高い水準を保てていますね。毎日の積み重ねが、あなたの実力を押し上げました。", "見事な正答率。間違えた箇所は、記憶をさらに強化するためのチャンスです。", "安定した成績ですね。学習リズムは非常に良い状態です。このまま突き進おう！", "素晴らしい！理解が深まっているのがよく分かります。流れを再確認して盤石に。", "あと少しで満点！その情熱があれば、どんな壁も乗り越えられます。頑張ろう！", "優秀なデータ同期です。間違えた問題は、今のうちに気づけて良かったと考えよう。", "順調に実力を伸ばしていますね。頑張りを一番知っているのはアプリの記録です。", "高得点です！本番でもこの精度で解ければ合格は近づきます。応援しています。", "知識の定着度が非常に高いです。さらに上を目指す姿勢が最高の結果を呼びます。", "素晴らしい！この調子で演習を重ね、苦手な時代を一つずつ消していきましょう。", "安定したスコア。日頃の努力が実力として定着しています。一歩一歩、自信を！"],
+            mid: ["一歩ずつ、確実に成長していますね。基礎は固まりました。次は応用力を磨こう。", "着実に前進しています. 間違えた問題こそ、あなたの実力を伸ばす鍵になります。", "手応えを感じ始めているはず。今は知識を繋ぎ合わせる時期。焦らず進んで。", "半分以上は正解できています。残りはもう一度教科書を見直すだけで解決します。", "努力の成果が見え始めています。毎日少しずつの積み重ねが大きな力に変わる。", "粘り強く頑張っていますね。このスコアは、あなたが挑戦し続けている証拠です。", "大丈夫、伸び代はたっぷりあります。今の悔しさをバネに、次はもっと高得点を。", "基礎ブロックの再構築が必要です。間違えた時代の流れを物語のように読み返そう。", "着実な進歩です。得意な時代を一つ作り、そこから広げるのが合格への近道です。", "学習の成果が出ています。理解できている部分は自信を持ち、曖昧な部分は今。 ", "一歩一歩、階段を上っています。今の努力は必ず本番であなたを助けてくれます。", "前向きにいきましょう！演習を繰り返すごとに知識の網目は細かくなっていきます。", "基礎はできています。用語同士の繋がりを意識すると、正答率は跳ね上がります。", "今の頑張りが未来のあなたを作ります。間違えた問題を友達だと思って向き合って。", "合格へのプロセスを歩んでいます。点数に一喜一憂せず、内容の理解を優先して。", "学習のリズムを作っていきましょう。今日できなかったことは明日できれば良い。", "着実な歩みです. 歴史の全体像が見え始めています。枝葉を足す作業に入ろう。", "成長の真っ最中にいます。諦めずに繰り返すことで、景色は必ず変わりますよ。", "手応えを信じてください。今は点数よりも解説を読んで納得することを大切に。", "頑張っていますね。一問正解するごとに以前の自分を超えています。応援してる！"],
+            low: ["焦る必要はありません。今は知識の穴を見つける最高のチャンス。一つずつ。 ", "まずは基礎単語から再確認してみましょう。土台がしっかりすれば点数は伸びる。", "リンクが少し不安定なだけ. リラックスしてもう一度解説を読んでみてください。", "ここが踏ん張りどころ. 一つずつ丁寧に理解を深めれば、必ず景色が変わります。", "今は間違いを恐れず演習しましょう。その悔しさが、本番の得点に繋がります。", "伸び代は無限大！まずは一番好きな時代から集中的に復習してみるのはどう？ ", "歴史の流れをざっと掴むところから再開しましょう。物語を楽しむ気持ちで。 ", "あなたは今、一番苦しい時期かもしれません。レベルアップには挑戦が必要です。", "点数ではなく、今日新しく知った「知識」に注目. 一歩ずつ前へ進めば大丈夫。", "大丈夫です。どんな名人も、最初は今のあなたと同じ場所からスタートした。 ", "間違えた分だけ、強くなれます。解説を「なるほど」と思うまで読み返して。 ", "深呼吸して、もう一度基礎に立ち返りましょう。急がば回れが最短ルートです。", "自分のペースで大丈夫. 他人と比べる必要はありません。昨日を超えていこう。", "知識を整理するチャンスです。年表を一度自分で書いてみると驚くほど進みます。", "諦めないで。このアプリは、あなたが再び立ち上がるのを何度でもサポートする。", "まずは一つ確実に覚えることから始めよう。その積み重ねが巨大な力になります。", "歴史は繋がりです。断片的な知識を、時代という糸で繋ぎ直す作業を今しよう。", "あなたの挑戦自体が素晴らしい。今日の結果を分析して明日の糧にしてください。", "少しずつでいい。教科書を1ページ読むだけで世界は昨日より広がっています。", "負けないで. あなたの「合格したい」という気持ちを、心から応援しています！"]
+        };
+
+        window.onload = () => { 
+            initUserInfo(); 
+            const themeGrid = getEl('theme-grid');
+            if (themeGrid) {
+                Object.entries(THEMES).forEach(([id, t]) => {
+                    const swatch = document.createElement('div');
+                    swatch.id = `swatch-${id}`;
+                    swatch.className = 'theme-swatch';
+                    swatch.style.background = t.accent;
+                    swatch.title = id;
+                    swatch.onclick = () => applyTheme(id);
+                    themeGrid.appendChild(swatch);
+                });
+            }
+            const savedTheme = localStorage.getItem('historia_theme_mode') || 'modeA';
+            applyTheme(savedTheme);
+            window.syncAllFromSpreadsheet(true); 
+            setOnClick('next-btn-action', () => { currentIdx++; if (currentIdx < quizData.length) showQuestion(); else finishSession(); }); 
+            setOnClick('sync-all-btn-action', () => window.syncAllFromSpreadsheet(false)); 
+            setOnClick('cloud-sync-toggle-btn', () => { const area = getEl('sync-area'); if (area) area.classList.toggle('hidden'); }); 
+        };
+    </script>
+</body>
+</html>
